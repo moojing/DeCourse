@@ -6,6 +6,9 @@ contract deCourse{
         address teacher;
         mapping (string => address) student;
     }
-    course[]  courses = new course[];
+    course[]  public courses;
+    function createCourse public (string memory _role) payable  {
+    
+    }  
     // function getCourses public returns () 
 }
