@@ -2,13 +2,14 @@ pragma solidity ^0.5.2;
 
 contract deCourse{
     // mapping(address => uint) public balances;
-    struct course{
+    struct Course{
         address teacher;
-        mapping (string => address) student;
+        address[] student; 
+        mapping (address => string ) name;
     }
-    course[]  public courses;
-    function createCourse public (string memory _role) payable  {
-    
+    Course[]  public courses;
+    function createCourse  (string memory _role) payable public  {
+        // courses.push(new Course());
     }  
     // function getCourses public returns () 
 }
