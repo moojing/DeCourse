@@ -3,13 +3,36 @@ pragma solidity ^0.5.2;
 contract deCourse{
     // mapping(address => uint) public balances;
     struct Course{
+        uint id;
+        string title;  
+        string description;
         address teacher;
-        address[] student; 
-        mapping (address => string ) name;
+        address[] students;
     }
+    
+    mapping (address => string ) addressToName;
+    mapping (address => Course ) addressToCourse;
+    
     Course[]  public courses;
-    function createCourse  (string memory _role) payable public  {
-        // courses.push(new Course());
-    }  
-    // function getCourses public returns () 
+    
+    function createCourse  (string memory _role) payable public {   
+        address[] memory students;
+        // students.push(msg.sender);
+        courses.push(new Course(courses.length ,'avn','kjashdkjahskd', students)); 
+    }
+    
+    function joinCourse(address _course , address _member , string memory _role) 
+        payable 
+        public {
+        
+    } 
+    
+    function leaveCourse(address _course , address _member , string memory _role) 
+        payable 
+        public {
+        
+        }   
+    
+    
+    
 }
