@@ -18,20 +18,21 @@ contract deCourse{
     function createCourse  (string memory _role) payable public {   
         address[] memory students;
         // students.push(msg.sender);
-        courses.push(new Course(courses.length ,'avn','kjashdkjahskd', students)); 
+        // courses.push(new Course(courses.length ,'avn','kjashdkjahskd', students)); 
     }
     
-    function joinCourse(address _course , address _member , string memory _role) 
+    function joinCourse(address _course  , string memory _role) 
         payable 
         public {
         
     } 
     
-    function leaveCourse(address _course , address _member , string memory _role) 
+    function leaveCourse(address _course  , string memory _role) 
         payable 
         public {
         
         }   
+    
     
     
     
