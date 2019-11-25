@@ -12,11 +12,11 @@ contract deCourse{
     enum Role { Student, Teacher }
     
     mapping (address => string ) addressToName;
-    mapping (address => Course ) addressToCourse;
+    mapping (address => uint ) addressToCourseId;
     
     Course[]  public courses;
     
-    function createCourse  (string memory _title, string memory _description) payable public {   
+    function createCourse  (string memory _title, string memory _description)  public {   
         address[] memory students;
         
         Course memory newCourse = Course({
@@ -28,6 +28,7 @@ contract deCourse{
         });
         
         courses.push(newCourse); 
+        addressToCourseId[msg.sender] = newCourse.id;
         courses[courses.length].students.push(msg.sender);
     }
     
