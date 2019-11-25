@@ -16,7 +16,10 @@ contract deCourse{
     
     Course[]  public courses;
     
-    function createCourse  (string memory _title, string memory _description)  public {   
+    function createCourse  (string memory _title, string memory _description, Role _role)  
+        payable
+        public {   
+        
         address[] memory students;
         
         Course memory newCourse = Course({
@@ -29,7 +32,13 @@ contract deCourse{
         
         courses.push(newCourse); 
         addressToCourseId[msg.sender] = newCourse.id;
-        courses[courses.length].students.push(msg.sender);
+        
+        if (_role == Role.Student) {
+            courses[newCourse.id].students.push(msg.sender);
+        }else if (_role == Role.Teacher) {
+            courses[newCourse.id].teacher = msg.sender; 
+        }
+        
     }
     
     function joinCourse(address _course  , string memory _role) 
