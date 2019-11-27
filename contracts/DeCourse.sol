@@ -13,7 +13,11 @@ contract deCourse{
     enum Role { Student, Teacher }
     
     mapping (address => string ) addressToName;
-    mapping (address => uint[] ) addressToCourseId;
+    mapping (address => uint[] )  addressToCourseId;
+    mapping (uint => bool) courseToJoinState;
+    
+    //courseToJoinState[addressToCourseId[address 0x123]]
+    // addressToCourseId[]
     
     Course[]  public courses;
     
@@ -25,10 +29,11 @@ contract deCourse{
         } 
         _; 
     }
+    
     function createCourse  (string memory _title, string memory _description, Role _role)  
         payable
         public 
-        returns (Role  role) {   
+        returns (address[] memory) {   
         
         address[] memory students;
         
@@ -48,25 +53,44 @@ contract deCourse{
         }else if (_role == Role.Teacher) {
             courses[newCourse.id].teacher = msg.sender; 
         }
-        return  Role.Teacher;
+        return  courses[newCourse.id].students;
         
     }
+    
     
     function joinCourse(uint _courseId  , Role _role) 
         haventJoinTheCourse(_courseId)
         payable 
         public {
         
-        
+        if (_role == Role.Student) {
+            courses[_courseId].students.push(msg.sender);             
+        }else if(_role == Role.Teacher){
+            courses[_courseId].teacher = msg.sender; 
+        }
+            
     } 
     
-    function leaveCourse(address _course  , string memory _role) 
+    function leaveCourse(uint _courseId  ) 
         payable 
         public {
-        
+            courses[_courseId].students;       
+            addressToCourseId;
         }   
     
+    function getCourse(uint _courseid) public view returns(Course memory){
+          return courses[_courseid] ;
+    }
     
+    function getStudent(uint _courseid) public view returns(address[] memory ){
+        return courses[_courseid].students;     
+    }
     
+    function getRole (Role _role) public pure returns(Role){
+        return Role(_role);
+    }
+    function getAddressToCourseId () public returns (uint[] memory){
+        return  addressToCourseId[msg.sender];
+    }  
     
 }
