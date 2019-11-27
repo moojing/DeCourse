@@ -73,9 +73,22 @@ contract deCourse{
     
     function leaveCourse(uint _courseId  ) 
         payable 
-        public {
-            courses[_courseId].students;       
-            addressToCourseId;
+        public 
+        returns(uint[] memory) {
+            Course storage targetCourse = courses[_courseId];       
+            uint[] storage userCourses = addressToCourseId[msg.sender];
+            
+            if (targetCourse.teacher==msg.sender){
+                targetCourse.teacher = address(0);
+            } 
+
+            for (uint i = 0; i<userCourses.length; i++){
+                if (userCourses[i] == targetCourse.id){
+                  delete userCourses[i]; 
+                } 
+            }
+            
+            return userCourses;
         }   
     
     function getCourse(uint _courseid) public view returns(Course memory){
