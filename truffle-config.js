@@ -1,3 +1,4 @@
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -17,6 +18,8 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+var HDWalletProvider = require("@truffle/hdwallet-provider");
+var mnemonic = "mesh crane dream extend cushion satoshi unveil online announce mouse radar neglect"
 
 // const HDWalletProvider = require('truffle-hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
@@ -43,6 +46,7 @@ module.exports = {
     // options below to some value.
     //
     development: {
+      provider: () => new HDWalletProvider(mnemonic, "http://localhost:8545"),
      host: "127.0.0.1",     // Localhost (default: none)
      port: 8545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)

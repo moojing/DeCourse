@@ -1,8 +1,14 @@
 pragma solidity ^0.5.2;
 pragma experimental ABIEncoderV2;
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
-contract deCourse{
+contract DeCourse {
     // mapping(address => uint) public balances;
+    address public owner; 
+    
+    constructor  () public{
+        owner = msg.sender;
+    } 
     struct Course{
         uint id;
         string title;  
@@ -68,6 +74,7 @@ contract deCourse{
         }else if(_role == Role.Teacher){
             courses[_courseId].teacher = msg.sender; 
         }
+        addressToCourseId[msg.sender].push(_courseId);
             
     } 
     
@@ -84,7 +91,8 @@ contract deCourse{
 
             for (uint i = 0; i<userCourses.length; i++){
                 if (userCourses[i] == targetCourse.id){
-                  delete userCourses[i]; 
+                  userCourses[i] = userCourses[userCourses.length-1];
+                  userCourses.length--;
                 } 
             }
             
@@ -102,7 +110,7 @@ contract deCourse{
     function getRole (Role _role) public pure returns(Role){
         return Role(_role);
     }
-    function getAddressToCourseId () public returns (uint[] memory){
+    function getAddressToCourseId () public view returns (uint[] memory){
         return  addressToCourseId[msg.sender];
     }  
     
