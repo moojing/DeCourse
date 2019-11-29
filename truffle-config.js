@@ -19,7 +19,7 @@
  *
  */
 var HDWalletProvider = require("@truffle/hdwallet-provider");
-var mnemonic = "mesh crane dream extend cushion satoshi unveil online announce mouse radar neglect"
+var mnemonic = "adapt miracle oxygen alone arrest corn square peanut dawn vocal roof focus"
 
 // const HDWalletProvider = require('truffle-hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
