@@ -17,14 +17,16 @@ contract("DeCourse", accounts => {
     );
     
     it('should create a new course', async ()=>{
-       
-            console.log('accounts[0]',accounts[0])
-            courseResult = await DeCourseContract.methods.createCourse(
-                'asdasd','asdad',0
-            ).send({from:accounts[0]});
+            
+            web3.eth.getBalance(accounts[0])
+            .then(console.log);
 
-            console.log('courseResult: ', courseResult);
-            assert.equal(0, courseResult.id, "deployer is not owner");
+            await DeCourseContract.methods.createCourse(
+                'asdasd','asdad',0
+            ).send({from:accounts[0],gas:6721975});
+            let cousese = await   DeCourseContract.methods.courses(0).call() 
+            
+            assert.equal(0, cousese.id, "deployer is not owner");
        
     })
 });

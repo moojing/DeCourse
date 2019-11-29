@@ -99,8 +99,8 @@ contract DeCourse {
             return userCourses;
         }   
     
-    function getCourse(uint _courseid) public view returns(Course memory){
-          return courses[_courseid] ;
+    function getCourses() public view returns(Course[] memory){
+          return courses ;
     }
     
     function getStudent(uint _courseid) public view returns(address[] memory ){
