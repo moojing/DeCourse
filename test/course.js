@@ -31,12 +31,15 @@ contract("DeCourse", accounts => {
 
     it('should join a course as a Student',async function() {
 
-        let courses = await DeCourseContract.methods.getCourses().call();
-        console.log('courses: ', courses);
-        let joinRes = await DeCourseContract.methods.joinCourse(courses[0].id,1).send({from:accounts[1]}) 
-        let newCourses = await DeCourseContract.methods.getCourses().call();
+        let courses = await   DeCourseContract.methods.getCourses().call() 
+        let firstCourse = courses[0]
+        console.log('firstCourse: ', firstCourse);
+        
+        await DeCourseContract.methods.joinCourse(firstCourse.id,1).send({from:accounts[1]}) 
+        let newCourses = await   DeCourseContract.methods.getCourses().call() 
         console.log('newCourses: ', newCourses);
-        console.log('joinRes: ', joinRes);
+        
+        assert.equal(newCourses[0].students[0],accounts[1], "there is no user join the first course as a student.")
         
         
     })

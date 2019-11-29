@@ -16,7 +16,7 @@ contract DeCourse {
         address teacher;
         address[] students;
     }
-    enum Role { Student, Teacher }
+    enum Role { Teacher,Student  }
     
     mapping (address => string ) addressToName;
     mapping (address => uint[] )  addressToCourseId;
