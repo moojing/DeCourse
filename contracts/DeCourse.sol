@@ -15,6 +15,7 @@ contract DeCourse {
         string description;
         address teacher;
         address[] students;
+        mapping (address => Role) addressToRole;  
     }
     enum Role { Teacher,Student  }
     
@@ -52,12 +53,15 @@ contract DeCourse {
         });
         
         courses.push(newCourse); 
+        
         addressToCourseId[msg.sender].push(newCourse.id);
         
         if (_role == Role.Student) {
             courses[newCourse.id].students.push(msg.sender);
+            newCourse.addressToRole[msg.sender] = Role.Student;
         }else if (_role == Role.Teacher) {
             courses[newCourse.id].teacher = msg.sender; 
+            newCourse.addressToRole[msg.sender] = Role.Teacher;
         }
         return  courses[newCourse.id].students;
         
