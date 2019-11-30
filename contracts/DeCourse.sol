@@ -6,54 +6,41 @@ contract DeCourse {
     // mapping(address => uint) public balances;
     address public owner;
 
-    constructor  () public{
+    constructor() public{
         owner = msg.sender;
     }
+
+    enum Role { Teacher,Student  }
+ 
     struct Course{
         uint id;
         string title;  
         string description;
         address teacher;
         address[] students;
-
-        mapping (address => Role) addressToRole;  
     }
-
-    enum Role { Teacher,Student  }
     
-    mapping (address => User) addressToUser;
     mapping (uint => bool) courseToJoinState;
-
-    struct User { 
-        uint index;
-        bool exists;
-        string userName; 
-        uint[] userCourses;
-    }
-    
-    //courseToJoinState[addressToCourseId[address 0x123]]
-    // addressToCourseId[]
-    
+    mapping (address=>uint[]) addressToTeacherCourse; 
+    mapping (address=>uint[]) addressToStudentCourse; 
     Course[]  public courses;
     
     modifier haventJoinTheCourse (uint courseId) {
-        User storage targetUser = addressToUser[msg.sender];
-        uint[] memory userCourses  = targetUser.userCourses;
-        for (uint i =0; i<userCourses.length;i++) {
-            require(courseId != userCourses[i]);
-        }
+        
         _; 
     }
     
-    function createCourse  (string memory _title, string memory _description, Role _role)  
+    function createCourse (string memory _title, string memory _description, Role _role)  
         payable
         public 
         returns (address[] memory) {   
         
-        address[] memory students;
-        
+        address[] memory students ;
+        uint newCourseId = courses.length;
+        // students.push(msg.sender);
+
         Course memory newCourse = Course({
-            id:courses.length ,
+            id:newCourseId ,
             title:_title,
             description:_description,
             teacher:address(0),
@@ -62,15 +49,16 @@ contract DeCourse {
         
         courses.push(newCourse); 
 
-        addressToUser[msg.sender].userCourses.push(newCourse.id);
-        
         if (_role == Role.Student) {
-            courses[newCourse.id].students.push(msg.sender);
-            newCourse.addressToRole[msg.sender] = Role.Student;
+            // newCourse.students.push(msg.sender);
+            courses[newCourseId].students.push(msg.sender);
+            addressToStudentCourse[msg.sender].push(newCourseId);
         }else if (_role == Role.Teacher) {
-            courses[newCourse.id].teacher = msg.sender; 
-            newCourse.addressToRole[msg.sender] = Role.Teacher;
+            newCourse.teacher = msg.sender; 
+            addressToTeacherCourse[msg.sender].push(newCourseId);
         }
+        
+
         return  courses[newCourse.id].students;
         
     }
@@ -83,10 +71,12 @@ contract DeCourse {
         
         if (_role == Role.Student) {
             courses[_courseId].students.push(msg.sender);             
+            addressToStudentCourse[msg.sender].push(_courseId);
         }else if(_role == Role.Teacher){
+            require (courses[_courseId].teacher == address(0),"The teacher is not empty!!"); 
             courses[_courseId].teacher = msg.sender; 
+            addressToTeacherCourse[msg.sender].push(_courseId);
         }
-        addressToUser[msg.sender].userCourses.push(_courseId);
             
     } 
 
@@ -94,33 +84,50 @@ contract DeCourse {
     function leaveCourse(uint _courseId  ) 
         payable 
         public 
-        returns(uint[] memory) {
+        returns(Course memory) {
             Course storage targetCourse = courses[_courseId];       
-            uint[] storage userCourses = addressToUser[msg.sender].userCourses;
+            address[] storage students  = targetCourse.students;
             
             if (targetCourse.teacher==msg.sender){
                 targetCourse.teacher = address(0);
+                removeFromCourseTeacher(targetCourse.id);
             } else {
-                // targetCourse.students
+               for (uint i = 0; i<students.length; i++){
+                   if(students[i]==msg.sender){
+                       students[i] = students[students.length-1]; 
+                       students.length--;
+                       removeFromCourseStudent(targetCourse.id);
+                   } 
+               }
             }  
-            
-
-
-            for (uint i = 0; i<userCourses.length; i++){
-                if (userCourses[i] == targetCourse.id){
-                  userCourses[i] = userCourses[userCourses.length-1];
-                  userCourses.length--;
-                } 
-            }
-            
-            return userCourses;
+        
+            return targetCourse;
         }   
-    
-    function setUserName(string memory _userName) public returns(User memory){
-        addressToUser[msg.sender].userName = _userName; 
-        return addressToUser[msg.sender];
-    }  
+     
 
+    
+    
+    
+    
+     
+    function removeFromCourseTeacher  (uint _courseId) private {
+        uint[] storage teacherCourse =  addressToTeacherCourse[msg.sender]; 
+        for (uint i=0; i<teacherCourse.length;i++){
+            if(teacherCourse[i]==_courseId){
+               teacherCourse[i] = teacherCourse[teacherCourse.length-1];
+               teacherCourse.length--;
+            }
+        }
+    }
+    function removeFromCourseStudent  (uint _courseId) private {
+        uint[] storage studentCourse =  addressToStudentCourse[msg.sender]; 
+        for (uint i=0; i<studentCourse.length;i++){
+            if(studentCourse[i]==_courseId){
+               studentCourse[i] = studentCourse[studentCourse.length-1];
+               studentCourse.length--;
+            }
+        }
+    }
     function getCourses() public view returns(Course[] memory){
           return courses ;
     }
