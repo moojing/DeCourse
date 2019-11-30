@@ -4,11 +4,11 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 contract DeCourse {
     // mapping(address => uint) public balances;
-    address public owner; 
-    
+    address public owner;
+
     constructor  () public{
         owner = msg.sender;
-    } 
+    }
     struct Course{
         uint id;
         string title;  
@@ -87,7 +87,7 @@ contract DeCourse {
             
             if (targetCourse.teacher==msg.sender){
                 targetCourse.teacher = address(0);
-            } 
+            } else
 
             for (uint i = 0; i<userCourses.length; i++){
                 if (userCourses[i] == targetCourse.id){
