@@ -4,18 +4,21 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 contract DeCourse {
     // mapping(address => uint) public balances;
-    address public owner; 
-    
+    address public owner;
+
     constructor  () public{
         owner = msg.sender;
-    } 
+    }
     struct Course{
         uint id;
         string title;  
         string description;
         address teacher;
         address[] students;
-    }   
+
+        mapping (address => Role) addressToRole;  
+    }
+
     enum Role { Teacher,Student  }
     
     mapping (address => User) addressToUser;
@@ -58,12 +61,15 @@ contract DeCourse {
         });
         
         courses.push(newCourse); 
+
         addressToUser[msg.sender].userCourses.push(newCourse.id);
         
         if (_role == Role.Student) {
             courses[newCourse.id].students.push(msg.sender);
+            newCourse.addressToRole[msg.sender] = Role.Student;
         }else if (_role == Role.Teacher) {
             courses[newCourse.id].teacher = msg.sender; 
+            newCourse.addressToRole[msg.sender] = Role.Teacher;
         }
         return  courses[newCourse.id].students;
         
@@ -95,9 +101,10 @@ contract DeCourse {
             if (targetCourse.teacher==msg.sender){
                 targetCourse.teacher = address(0);
             } else {
-                targetCourse.students
+                // targetCourse.students
             }  
             
+
 
             for (uint i = 0; i<userCourses.length; i++){
                 if (userCourses[i] == targetCourse.id){
