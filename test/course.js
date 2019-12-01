@@ -4,7 +4,8 @@ let web3 = new Web3("http://localhost:8545");
 let helloContract, ownerAddress, deployedContractAddress, DeCourseContract;
 
 contract("DeCourse", accounts => {
-
+    
+    
     it("owner should be the one who is the contract deployer", async () =>
         await DeCourse.deployed().then(async instance => {
             deployedContractAddress = instance.address;
@@ -59,6 +60,11 @@ contract("DeCourse", accounts => {
         
         assert.equal(coursesAfter[0].students[0],accounts[1], "A student should leave the first course.")
     })
-
+    
+    it('should not join the same course twice', async function(){
+        await DeCourseContract.methods.joinCourse(firstCourse.id,0).send({from:accounts[2]}) 
+        console.log('teacher: ', teacher);
+        
+    } ) 
     
 });

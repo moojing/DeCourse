@@ -19,14 +19,22 @@ contract DeCourse {
         address teacher;
         address[] students;
     }
-    
+    event Charge(uint256 indexed _courseId, address indexed _participant, uint256 _amount);
     mapping (uint => bool) courseToJoinState;
     mapping (address=>uint[]) addressToTeacherCourse; 
     mapping (address=>uint[]) addressToStudentCourse; 
     Course[]  public courses;
     
-    modifier haventJoinTheCourse (uint courseId) {
-        
+    modifier haventJoinTheCourse (uint _courseId, Role _role) {
+        if(_role == Role.Student){
+            for(uint i=0; i<addressToStudentCourse[msg.sender].length;i++){
+                require(courseToJoinState[addressToStudentCourse[msg.sender][i]] == false ,"Cant join the same course twice!");
+            } 
+        }else if(_role == Role.Teacher){
+            for(uint i=0; i<addressToTeacherCourse[msg.sender].length;i++){
+                require(courseToJoinState[addressToTeacherCourse[msg.sender][i]] == false , "Cant join the same course twice!");
+            } 
+        }
         _; 
     }
     
@@ -48,6 +56,8 @@ contract DeCourse {
         });
         
         courses.push(newCourse); 
+        
+        courseToJoinState[newCourseId] = true; 
 
         if (_role == Role.Student) {
             // newCourse.students.push(msg.sender);
@@ -65,7 +75,7 @@ contract DeCourse {
     
     
     function joinCourse(uint _courseId  , Role _role) 
-        haventJoinTheCourse(_courseId)
+        haventJoinTheCourse(_courseId,_role)
         payable 
         public {
         
@@ -77,6 +87,8 @@ contract DeCourse {
             courses[_courseId].teacher = msg.sender; 
             addressToTeacherCourse[msg.sender].push(_courseId);
         }
+
+
             
     } 
 
@@ -100,7 +112,7 @@ contract DeCourse {
                    } 
                }
             }  
-        
+            courseToJoinState[_courseId] = false; 
             return targetCourse;
         }   
      
@@ -136,9 +148,11 @@ contract DeCourse {
         return courses[_courseid].students;     
     }
     
-    function getRole (Role _role) public pure returns(Role){
-        return Role(_role);
+    function getTeacher(uint _courseid) public view returns(address ){
+        return courses[_courseid].teacher;     
     }
+    
+    
    
     
 }
