@@ -1,14 +1,20 @@
+
 import styled from 'styled-components';
-import * as MAppBar from '@material-ui/core/AppBar';
-import * as MToolbar from '@material-ui/core/Toolbar';
-import * as MTypography from '@material-ui/core/Typography';
+import MToolbar from '@material-ui/core/Toolbar';
+import MTypography from '@material-ui/core/Typography';
 
 
-
- const Toolbar = styled(MToolbar)`
- && {flex-grow:1;}
+ let Toolbar = styled(MToolbar)`
+ 
   
 `;
 
 
-export{Toolbar}
+let Typography  = styled(MTypography)`
+    flex-grow:1;  
+`; 
+
+
+
+
+export{Toolbar,Typography}

@@ -45,7 +45,7 @@ contract("DeCourse", accounts => {
         let courses = await  DeCourseContract.methods.getCourses().call() 
         let firstCourse = courses[0]
         
-        await DeCourseContract.methods.joinCourse(firstCourse.id,0).send({from:accounts[2]}) 
+        await DeCourseContract.methods.joinCourse(firstCourse.id,0).send({from:accounts[2],value: web3.utils.toWei("1", "ether")}) 
         let newCourses = await   DeCourseContract.methods.getCourses().call() 
         
         assert.equal(newCourses[0].teacher,accounts[2], "there is no user join the first course as a student.")
@@ -61,9 +61,12 @@ contract("DeCourse", accounts => {
         assert.equal(coursesAfter[0].students[0],accounts[1], "A student should leave the first course.")
     })
     
-    it('should not join the same course twice', async function(){
-        await DeCourseContract.methods.joinCourse(firstCourse.id,0).send({from:accounts[2]}) 
-        console.log('teacher: ', teacher);
+    it('should get some balance', async function(){
+
+        // await DeCourseContract.methods.joinCourse(firstCourse.id,0).send({from:accounts[2]}) 
+        let contractBalance =  await web3.eth.getBalance(deployedContractAddress) 
+        console.log('contractBalance: ', contractBalance);
+        assert.equal(contractBalance, "1000000000000000000", "contract has 1 ETH");
         
     } ) 
     
