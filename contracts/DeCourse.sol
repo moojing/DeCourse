@@ -2,6 +2,7 @@ pragma solidity ^0.5.2;
 pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
+
 contract DeCourse {
     // mapping(address => uint) public balances;
     address public owner;
@@ -9,6 +10,7 @@ contract DeCourse {
     constructor() public{
         owner = msg.sender;
     }
+
 
     enum Role { Teacher,Student  }
  
@@ -18,11 +20,30 @@ contract DeCourse {
         string description;
         address teacher;
         address[] students;
+        uint tuitionFee; 
+        uint courseBalance;
     }
-    event Charge(uint256 indexed _courseId, address indexed _participant, uint256 _amount);
+
+    event Charge(
+        uint256 indexed _courseId, 
+        address indexed _participant, 
+        uint256 _amount);
+
+    event Refund(
+        address indexed _student,
+        uint _value,
+        uint _courseRemainBalance
+    );
+    event DepositToTuitionFee(
+        address indexed _student,
+        uint _value, 
+        uint _courseRemainBalance
+    );
+
     mapping (uint => bool) courseToJoinState;
     mapping (address=>uint[]) addressToTeacherCourse; 
     mapping (address=>uint[]) addressToStudentCourse; 
+    mapping (address=>uint) public addressToTuitionFee;  
     Course[]  public courses;
     
     modifier haventJoinTheCourse (uint _courseId, Role _role) {
@@ -38,6 +59,7 @@ contract DeCourse {
         _; 
     }
     
+    
     function createCourse (string memory _title, string memory _description, Role _role)  
         payable
         public 
@@ -52,7 +74,9 @@ contract DeCourse {
             title:_title,
             description:_description,
             teacher:address(0),
-            students:students
+            students:students,
+            tuitionFee:1 ether,
+            courseBalance:0
         });
         
         courses.push(newCourse); 
@@ -68,7 +92,6 @@ contract DeCourse {
             addressToTeacherCourse[msg.sender].push(newCourseId);
         }
         
-
         return  courses[newCourse.id].students;
         
     }
@@ -78,10 +101,15 @@ contract DeCourse {
         haventJoinTheCourse(_courseId,_role)
         payable 
         public {
-        
+        Course storage targetCourse = courses[_courseId]; 
         if (_role == Role.Student) {
-            courses[_courseId].students.push(msg.sender);             
+            require(msg.value >= targetCourse.tuitionFee,"the student doesnt have enough fee.");
+            targetCourse.students.push(msg.sender);             
             addressToStudentCourse[msg.sender].push(_courseId);
+            
+            addressToTuitionFee[msg.sender] += msg.value;
+            targetCourse.courseBalance += msg.value;
+            emit DepositToTuitionFee(msg.sender,addressToTuitionFee[msg.sender],targetCourse.courseBalance);
         }else if(_role == Role.Teacher){
             require (courses[_courseId].teacher == address(0),"The teacher is not empty!!"); 
             courses[_courseId].teacher = msg.sender; 
@@ -100,26 +128,33 @@ contract DeCourse {
             Course storage targetCourse = courses[_courseId];       
             address[] storage students  = targetCourse.students;
             
+                
             if (targetCourse.teacher==msg.sender){
                 targetCourse.teacher = address(0);
                 removeFromCourseTeacher(targetCourse.id);
             } else {
+                
+                
                for (uint i = 0; i<students.length; i++){
                    if(students[i]==msg.sender){
+                        msg.sender.transfer(1 ether);
+                        targetCourse.courseBalance -= 1 ether;
+                        emit Refund(msg.sender,addressToTuitionFee[msg.sender],targetCourse.courseBalance ); 
+                        addressToTuitionFee[msg.sender] = 0; 
+                        
+                       
                        students[i] = students[students.length-1]; 
                        students.length--;
                        removeFromCourseStudent(targetCourse.id);
                    } 
                }
-            }  
+            }
+
             courseToJoinState[_courseId] = false; 
             return targetCourse;
-        }   
+    }   
      
 
-    
-    
-    
     
      
     function removeFromCourseTeacher  (uint _courseId) private {
@@ -152,7 +187,12 @@ contract DeCourse {
         return courses[_courseid].teacher;     
     }
     
-    
+    function withdraw() public {
+        msg.sender.transfer(address(this).balance);
+    }
+    function getOwner() public view returns (address){
+        return owner;
+    }
    
     
 }
