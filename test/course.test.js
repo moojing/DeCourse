@@ -87,13 +87,14 @@ contract("DeCourse", accounts => {
 
 		courses = await courseContract.getCourseStates()
 		assert.equal(courses[0].students[0], accounts[1]); 
+		assert.equal(courses[0].courseBalance, web3.utils.toWei("1", "ether")); 
 		
 		await courseContract.leaveCourse(theFirstCourseId,{
 			from:accounts[1],
 			gas:6721975,
 		});
 		courses = await courseContract.getCourseStates()
-		
+		assert.equal(courses[0].courseBalance, 0); 
 		let joinRes = await courseContract.isAddressInCourse(courses[0].id,accounts[1]) 
 		
 	 	assert.equal(joinRes,false,'accounts[1] should leave the course.')
