@@ -1,20 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import { makeStyles } from '@material-ui/core/styles';
-import {Box,Button,Container,Grid,Paper} from '@material-ui/core'
-import Header from './components/Header'
+import React ,{useEffect,useState,useContext}from 'react';
+// import { makeStyles } from '@material-ui/core/styles';
 
- 
+import Header from './components/Header'
+import CourseList from './components/CourseList'
+import {initApp} from './utils'
+import {AppContext} from '../context'
 function App() {
+  let [walletAddress,setWalletAddress] = useState('') 
+
+  useEffect(()=>{
+    window.ethereum.enable().then(result => { 
+      setWalletAddress(result[0] )
+      initApp(result[0])
+    })
+    
+  },[walletAddress])
   
+  let appContextValue = {
+    walletAddress
+  }
   return (
+    <AppContext.Provider value={appContextValue}>
     <div className="App">
       <Header/>
-      <Container>
-        
-          
-      </Container>
+      <CourseList/>
+      
     </div>
+    </AppContext.Provider>
   );
 }
 
