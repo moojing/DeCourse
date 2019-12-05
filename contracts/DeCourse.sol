@@ -46,7 +46,7 @@ contract DeCourse {
         uint _value,
         uint _courseRemainBalance
     );
-    event DepositToTuitionFee(
+    event Deposit(
         address indexed _student,
         uint _value, 
         uint _courseRemainBalance
@@ -104,8 +104,10 @@ contract DeCourse {
             courses[newCourseId].studentIndexToTuitionFee[students.length] = msg.value;
             courses[newCourseId].students.push(msg.sender);
             addressToStudentCourse[msg.sender].push(newCourseId);
+            
+            
         }else if (_role == Role.Teacher) {
-            newCourse.teacher = msg.sender; 
+            courses[newCourseId].teacher = msg.sender; 
             addressToTeacherCourse[msg.sender].push(newCourseId);
         }
         emit CreateCourse(newCourseId,courses[newCourseId].title, courses[newCourseId].description) ;
@@ -127,9 +129,13 @@ contract DeCourse {
             targetCourse.students.push(msg.sender);             
             addressToStudentCourse[msg.sender].push(_courseId);
             //course fee
-            addressToTuitionFee[msg.sender] += msg.value;
+            targetCourse.studentIndexToTuitionFee[targetCourse.students.length-1] += msg.value;
             targetCourse.courseBalance += msg.value;
-            emit DepositToTuitionFee(msg.sender,addressToTuitionFee[msg.sender],targetCourse.courseBalance);
+            emit Deposit(
+                msg.sender,
+                targetCourse.studentIndexToTuitionFee[targetCourse.students.length-1],
+                targetCourse.courseBalance);
+
         }else if(_role == Role.Teacher){
             require (courses[_courseId].teacher == address(0),"The teacher is not empty!!"); 
             courses[_courseId].teacher = msg.sender; 
@@ -156,17 +162,16 @@ contract DeCourse {
                 
                 
                for (uint i = 0; i<students.length; i++){
-                   if(students[i]==msg.sender){
+                   if(students[i]==msg.sender && targetCourse.addressToJoinState[msg.sender]==true){
                        //refund when a student leave the course
-                        msg.sender.transfer(addressToTuitionFee[msg.sender]);
-                        targetCourse.courseBalance -= addressToTuitionFee[msg.sender];
-                        emit Refund(msg.sender,addressToTuitionFee[msg.sender],targetCourse.courseBalance ); 
-                        addressToTuitionFee[msg.sender] = 0; 
+                       uint studentTuitionFee = targetCourse.studentIndexToTuitionFee[i];
+                        msg.sender.transfer(studentTuitionFee);
+
+                        targetCourse.courseBalance -= studentTuitionFee;
+                        emit Refund(msg.sender,studentTuitionFee,targetCourse.courseBalance ); 
+                        targetCourse.studentIndexToTuitionFee[i] = 0; 
                         
-                       
-                       students[i] = students[students.length-1]; 
-                       students.length--;
-                       removeFromCourseStudent(targetCourse.id);
+                        removeFromCourseStudent(targetCourse.id);
                    } 
                }
             }
@@ -233,7 +238,6 @@ contract DeCourse {
 
         for(uint i=0; i<targetCourse.students.length; i++){
             if( targetCourse.addressToJoinState[targetCourse.students[i]] == true){
-
                 validStudent[studentIndex] = targetCourse.students[i];
                 studentIndex+=1;
             }
@@ -241,6 +245,10 @@ contract DeCourse {
         return validStudent;     
     }
     
+    function isAddressInCourse(uint _courseId, address _address) public view returns(bool){
+            return courses[_courseId].addressToJoinState[_address];
+    }
+
     function getTeacher(uint _courseId) public view returns(address ){
         return courses[_courseId].teacher;     
     }

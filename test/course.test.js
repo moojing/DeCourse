@@ -63,14 +63,67 @@ contract("DeCourse", accounts => {
 			value:web3.utils.toWei("1", "ether")
 		});
 
-		let course = await  courseContract.getCourseStates()
-
 		let students = await courseContract.getStudentsByCourseId(0)
 		console.log('students: ', students);
 
 		assert.equal(students[0], accounts[1], "account[1] should be a student.");
 	})
 
-	
+	it('a student account[1] should join and leave the course.', async ()=>{
+
+		await courseContract.createCourse(
+			'The First Course','I am the teacher in this course',0
+		,{from:accounts[0],gas:6721975});
+
+		let courses = await courseContract.getCourseStates()
+		assert.equal(courses[0].teacher, accounts[0]); 
+		let theFirstCourseId = courses[0].id;
+
+		await courseContract.joinCourse(theFirstCourseId ,1,{
+			from:accounts[1],
+			gas:6721975,
+			value:web3.utils.toWei("1", "ether")
+		});
+
+		courses = await courseContract.getCourseStates()
+		assert.equal(courses[0].students[0], accounts[1]); 
+		
+		await courseContract.leaveCourse(theFirstCourseId,{
+			from:accounts[1],
+			gas:6721975,
+		});
+		courses = await courseContract.getCourseStates()
+		
+		let joinRes = await courseContract.isAddressInCourse(courses[0].id,accounts[1]) 
+		
+	 	assert.equal(joinRes,false,'accounts[1] should leave the course.')
+		
+	})
+
+	// it('a student cant join the same course twice', async ()=>{
+	// 	await courseContract.createCourse(
+	// 		'The First Course','I am the teacher in this course',0
+	// 	,{from:accounts[0],gas:6721975});
+		
+	// 	let courses = await courseContract.getCourseStates()
+	// 	let theFirstCourseId = courses[0].id;
+		
+
+	// 	await courseContract.joinCourse(theFirstCourseId ,1,{
+	// 		from:accounts[1],
+	// 		gas:6721975,
+	// 		value:web3.utils.toWei("1", "ether")
+	// 	});
+
+	// 	await courseContract.joinCourse(theFirstCourseId ,1,{
+	// 		from:accounts[1],
+	// 		gas:6721975,
+	// 		value:web3.utils.toWei("1", "ether")
+	// 	});
+
+	// 	courses = await courseContract.getCourseStates()
+	// 	console.log('courses: ', courses);
+
+	// })
 
 });
