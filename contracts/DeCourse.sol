@@ -24,10 +24,11 @@ contract DeCourse {
         uint courseBalance;
     }
 
-    event Charge(
+    event CreateCourse(
         uint256 indexed _courseId, 
-        address indexed _participant, 
-        uint256 _amount);
+        string _description,
+        string _title
+    );
 
     event Refund(
         address indexed _student,
@@ -63,7 +64,7 @@ contract DeCourse {
     function createCourse (string memory _title, string memory _description, Role _role)  
         payable
         public 
-        returns (address[] memory) {   
+        returns (Course[] memory) {   
         
         address[] memory students ;
         uint newCourseId = courses.length;
@@ -91,8 +92,8 @@ contract DeCourse {
             newCourse.teacher = msg.sender; 
             addressToTeacherCourse[msg.sender].push(newCourseId);
         }
-        
-        return  courses[newCourse.id].students;
+        emit CreateCourse(newCourseId,courses[newCourseId].title, courses[newCourseId].description) ;
+        return  courses;
         
     }
     
@@ -106,7 +107,7 @@ contract DeCourse {
             require(msg.value >= targetCourse.tuitionFee,"the student doesnt have enough fee.");
             targetCourse.students.push(msg.sender);             
             addressToStudentCourse[msg.sender].push(_courseId);
-            
+            //course fee
             addressToTuitionFee[msg.sender] += msg.value;
             targetCourse.courseBalance += msg.value;
             emit DepositToTuitionFee(msg.sender,addressToTuitionFee[msg.sender],targetCourse.courseBalance);
@@ -137,8 +138,9 @@ contract DeCourse {
                 
                for (uint i = 0; i<students.length; i++){
                    if(students[i]==msg.sender){
-                        msg.sender.transfer(1 ether);
-                        targetCourse.courseBalance -= 1 ether;
+                       //refund when a student leave the course
+                        msg.sender.transfer(addressToTuitionFee[msg.sender]);
+                        targetCourse.courseBalance -= addressToTuitionFee[msg.sender];
                         emit Refund(msg.sender,addressToTuitionFee[msg.sender],targetCourse.courseBalance ); 
                         addressToTuitionFee[msg.sender] = 0; 
                         

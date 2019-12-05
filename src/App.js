@@ -1,23 +1,34 @@
-import React ,{useEffect,useState,useContext}from 'react';
+import React ,{useEffect,useState,useRef}from 'react';
 // import { makeStyles } from '@material-ui/core/styles';
 
 import Header from './components/Header'
 import CourseList from './components/CourseList'
-import {initApp} from './utils'
-import {AppContext} from '../context'
+import {getContract} from './utils/contract'
+import {AppContext} from './context'
 function App() {
   let [walletAddress,setWalletAddress] = useState('') 
-
+  let [courseContract,setCourseContract] = useState(null)
+  const isCancelled = React.useRef(false);
   useEffect(()=>{
     window.ethereum.enable().then(result => { 
-      setWalletAddress(result[0] )
-      initApp(result[0])
+      
+        setWalletAddress(result[0] )
+        let contract =  getContract(result[0])
+        setCourseContract(contract)
+        
+        contract.events.CreateCourse().on('data', function(event){
+          console.log('event',event); // same results as the optional callback above
+        })
+      
     })
-    
-  },[walletAddress])
+    return ()=>{
+      isCancelled.current=true
+    }
+  },[])
   
   let appContextValue = {
-    walletAddress
+    walletAddress,
+    courseContract
   }
   return (
     <AppContext.Provider value={appContextValue}>

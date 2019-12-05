@@ -1,14 +1,25 @@
-import React,{useContext} from 'react'
+import React,{useContext, useEffect} from 'react'
 import AppBar from '@material-ui/core/AppBar';
 import {Button,Menu,MenuItem} from '@material-ui/core';
 
-import {createCourse} from '../utils/contract'
+import {createCourse,getCourses,getContract} from '../utils/contract'
 import * as S from './Header.styled'
-import {AppContext} from '../context'
+import {AppContext} from '../context/index'
+
 
 let Header = ()=>{
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {walletAddress}  = useContext(AppContext)
+  const {walletAddress,courseContract}  = useContext(AppContext)
+  
+  useEffect(()=>{
+    if(courseContract){
+      console.log('courseContract: ', courseContract);
+   
+    }
+    
+   
+  },[courseContract])
+
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -17,10 +28,16 @@ let Header = ()=>{
     setAnchorEl(null);
   };
   
-  const onCreateCourse = ()=>{
-    createCourse(walletAddress).then(res=>{
-      console.log(res)
-    })
+  const onCreateCourse =async ()=>{
+    let courseData = {
+      title: 'BlockChain 101', 
+      description:"let's learn blockchain!!",
+      role:1
+    }
+    await createCourse(courseData,{from:walletAddress})
+   
+    // let courses = await getCourses()
+   
 
   }
   
@@ -35,7 +52,7 @@ let Header = ()=>{
             color="inherit">
             創建課程
         </Button>
-          <Button 
+        <Button 
             aria-controls="simple-menu" 
             aria-haspopup="true" 
             onClick={handleClick}

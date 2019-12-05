@@ -1,22 +1,24 @@
 
 
-import {getContract} from '../services'
+import {web3Provider,courseABI} from '../services'
 import {parse} from 'query-string'
 
 let contractAddress = parse(window.location.search).address 
 if (!contractAddress) {
     contractAddress = prompt("Enter contract address", "0x");
 }
-let contract = getContract(contractAddress); 
 
+export const getContract =  (address) =>  new web3Provider.eth.Contract(courseABI, address);
+export let courseContract = getContract(contractAddress); 
 
 export let getCourses = ()=>{
-    return contract.methods.getCourses().call()
+    return courseContract.methods.getCourses().call()
 }
 
-export let createCourse = (from)=>{
-    return contract.methods.createCourse( 
-        'The First Course',
-        'I am the first student in this course',
-        1).send({from})
+export let createCourse = ({title,description,role},options)=>{
+    
+    return courseContract.methods.createCourse( 
+        title,
+        description,
+        role).send({...options})
 }
