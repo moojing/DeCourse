@@ -21,6 +21,17 @@ contract DeCourse {
         address teacher;
         address[] students;
         uint tuitionFee; 
+        mapping (uint => uint) studentIndexToTuitionFee;
+        mapping(address => bool) addressToJoinState;
+        uint courseBalance;
+    }
+    struct CourseJoinState{
+        uint id;
+        string title;  
+        string description;
+        address teacher;
+        address[] students;
+        uint tuitionFee; 
         uint courseBalance;
     }
 
@@ -41,7 +52,7 @@ contract DeCourse {
         uint _courseRemainBalance
     );
 
-    mapping (uint => bool) courseToJoinState;
+    
     mapping (address=>uint[]) addressToTeacherCourse; 
     mapping (address=>uint[]) addressToStudentCourse; 
     mapping (address=>uint) public addressToTuitionFee;  
@@ -50,11 +61,14 @@ contract DeCourse {
     modifier haventJoinTheCourse (uint _courseId, Role _role) {
         if(_role == Role.Student){
             for(uint i=0; i<addressToStudentCourse[msg.sender].length;i++){
-                require(courseToJoinState[addressToStudentCourse[msg.sender][i]] == false ,"Cant join the same course twice!");
+                uint  courseId  = addressToStudentCourse[msg.sender][i];
+                //the courseId is the same as the courses index.
+                require(courses[courseId].addressToJoinState[msg.sender]  == false ,"Cant join the same course twice!");
             } 
         }else if(_role == Role.Teacher){
             for(uint i=0; i<addressToTeacherCourse[msg.sender].length;i++){
-                require(courseToJoinState[addressToTeacherCourse[msg.sender][i]] == false , "Cant join the same course twice!");
+                uint  courseId  = addressToTeacherCourse[msg.sender][i];
+                require(courses[courseId].addressToJoinState[msg.sender] == false , "Cant join the same course twice!");
             } 
         }
         _; 
@@ -64,7 +78,7 @@ contract DeCourse {
     function createCourse (string memory _title, string memory _description, Role _role)  
         payable
         public 
-        returns (Course[] memory) {   
+        returns (uint) {   
         
         address[] memory students ;
         uint newCourseId = courses.length;
@@ -82,10 +96,12 @@ contract DeCourse {
         
         courses.push(newCourse); 
         
-        courseToJoinState[newCourseId] = true; 
+        courses[newCourseId].addressToJoinState[msg.sender] = true; 
 
         if (_role == Role.Student) {
-            // newCourse.students.push(msg.sender);
+            require(msg.value >= newCourse.tuitionFee,"the student doesnt have enough fee.");
+            //students.length is the student index before push into student array.
+            courses[newCourseId].studentIndexToTuitionFee[students.length] = msg.value;
             courses[newCourseId].students.push(msg.sender);
             addressToStudentCourse[msg.sender].push(newCourseId);
         }else if (_role == Role.Teacher) {
@@ -93,7 +109,8 @@ contract DeCourse {
             addressToTeacherCourse[msg.sender].push(newCourseId);
         }
         emit CreateCourse(newCourseId,courses[newCourseId].title, courses[newCourseId].description) ;
-        return  courses;
+            
+        return  courses[newCourseId].id;
         
     }
     
@@ -103,6 +120,8 @@ contract DeCourse {
         payable 
         public {
         Course storage targetCourse = courses[_courseId]; 
+        targetCourse.addressToJoinState[msg.sender] = true; 
+
         if (_role == Role.Student) {
             require(msg.value >= targetCourse.tuitionFee,"the student doesnt have enough fee.");
             targetCourse.students.push(msg.sender);             
@@ -125,7 +144,7 @@ contract DeCourse {
     function leaveCourse(uint _courseId  ) 
         payable 
         public 
-        returns(Course memory) {
+        returns(uint) {
             Course storage targetCourse = courses[_courseId];       
             address[] storage students  = targetCourse.students;
             
@@ -151,9 +170,9 @@ contract DeCourse {
                    } 
                }
             }
-
-            courseToJoinState[_courseId] = false; 
-            return targetCourse;
+            courses[_courseId].addressToJoinState[msg.sender] = false; 
+            
+            return courses[_courseId].id;
     }   
      
 
@@ -177,16 +196,53 @@ contract DeCourse {
             }
         }
     }
-    function getCourses() public view returns(Course[] memory){
-          return courses ;
+    function getCourseStates() public view returns(CourseJoinState[] memory){
+        CourseJoinState[] memory courseJoinStates = new CourseJoinState[](courses.length); 
+        for (uint i=0; i<courses.length; i++){
+            Course storage targetCourse  = courses[i];
+             courseJoinStates[i] =  CourseJoinState({
+                id: targetCourse.id,
+                title: targetCourse.title,
+                description: targetCourse.description,
+                teacher: targetCourse.teacher,
+                students: targetCourse.students,
+                tuitionFee: targetCourse.tuitionFee,
+                courseBalance : targetCourse.courseBalance
+          });
+        }
+        return courseJoinStates;   
+    }
+    function getCourseState(uint _courseId) public view returns(CourseJoinState memory){
+          Course storage targetCourse = courses[_courseId];
+          CourseJoinState memory courseState =  CourseJoinState({
+                id: targetCourse.id,
+                title: targetCourse.title,
+                description: targetCourse.description,
+                teacher: targetCourse.teacher,
+                students: targetCourse.students,
+                tuitionFee: targetCourse.tuitionFee,
+                courseBalance : targetCourse.courseBalance
+          });
+          return courseState ;
     }
     
-    function getStudent(uint _courseid) public view returns(address[] memory ){
-        return courses[_courseid].students;     
+    function getStudentsByCourseId(uint _courseId) public view returns(address[] memory ){
+        Course storage targetCourse = courses[_courseId] ; 
+        uint  studentIndex = 0;
+        address[] memory validStudent =new address[](targetCourse.students.length);
+
+        for(uint i=0; i<targetCourse.students.length; i++){
+            if( targetCourse.addressToJoinState[targetCourse.students[i]] == true){
+
+                validStudent[studentIndex] = targetCourse.students[i];
+                studentIndex+=1;
+            }
+        }
+        return validStudent;     
     }
     
-    function getTeacher(uint _courseid) public view returns(address ){
-        return courses[_courseid].teacher;     
+    function getTeacher(uint _courseId) public view returns(address ){
+        return courses[_courseId].teacher;     
     }
     
     function withdraw() public {
