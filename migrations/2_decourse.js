@@ -1,5 +1,7 @@
-const Migrations = artifacts.require("DeCourse");
+const DeCourse = artifacts.require("DeCourse");
 
 module.exports = function(deployer) {
-  deployer.deploy(Migrations);
+  deployer.deploy(DeCourse).then(()=>{
+    console.log(DeCourse.address)
+  });
 };
