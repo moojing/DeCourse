@@ -1,1 +1,1 @@
-export let ADD_COURSES = 'ADD_COURSES'
+export let ADD_COURSE = 'ADD_COURSE'

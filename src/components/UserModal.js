@@ -34,7 +34,10 @@ export default  ({showUserModal,setUserModal})=>{
                         </Typography>
                     </S.Box>
                     <S.Box color="text.primary">
-                        <Button fullWidth size={'medium'} variant="contained" color="primary">
+                        <Button fullWidth size={'medium'} 
+                                variant="contained" 
+                                color="primary"
+                                onClick={onSetNameSubmit}>
                            送出
                         </Button>
                     </S.Box>

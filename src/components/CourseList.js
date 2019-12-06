@@ -1,4 +1,4 @@
-import React,{useEffect,useContext} from 'react'; 
+import React,{useEffect,useContext,useCallback} from 'react'; 
 import {Grid} from '@material-ui/core'
 
 import {AppContext} from '../context' 
@@ -8,31 +8,35 @@ import * as S from './CourseList.styled'
 
 export default () => {
     let {coursesState,
+        addCourse,
+        courseContract,
         setUserModal,
         showUserModal} = useContext(AppContext) 
-    
+      
     useEffect(()=>{
-        console.log('courseStates',coursesState)
-        console.log('showUserModal',showUserModal)
-    }) 
+        if(courseContract){
+            courseContract.methods.getCourseStates().call()
+                .then(res=>{
+                    addCourse(res)
+            }) 
+        }
+         // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[courseContract])
+    
+
+    console.log('coursesState: ', coursesState);
     return (
         <S.Container>
             <Grid container spacing={3}>
-                <Grid item xs={3}>
-                    <S.Paper> xs=3 </S.Paper>
-                </Grid>
-                <Grid item xs={3}>
-                    <S.Paper> xs=3 </S.Paper>
-                </Grid>
-                <Grid item xs={3}>
-                    <S.Paper > xs=3 </S.Paper>
-                </Grid>
-                <Grid item xs={3}>
-                    <S.Paper > xs=3 </S.Paper>
-                </Grid>
-                <Grid item xs={3}>
-                    <S.Paper > xs=3 </S.Paper>
-                </Grid>
+                {coursesState.courses.map((course,index)=>{
+                    return (
+                        <Grid item xs={3} key={index}>
+                            <S.Paper> {course[0].title} </S.Paper>
+                        </Grid>
+                    )
+                })}
+                
+             
             </Grid>
 
             <UserModal
