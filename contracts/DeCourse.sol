@@ -13,7 +13,7 @@ contract DeCourse {
 
 
     enum Role { Teacher,Student  }
- 
+    
     struct Course{
         uint id;
         string title;  
@@ -52,7 +52,7 @@ contract DeCourse {
         uint _courseRemainBalance
     );
 
-    
+    mapping(address=>string) addressToName;
     mapping (address=>uint[]) addressToTeacherCourse; 
     mapping (address=>uint[]) addressToStudentCourse; 
     mapping (address=>uint) public addressToTuitionFee;  
@@ -259,6 +259,12 @@ contract DeCourse {
     function getOwner() public view returns (address){
         return owner;
     }
+    function getAddressName(address _address) public view  returns (string memory){
+        return addressToName[_address];
+    } 
+    function setAddressName(address _address, string memory _name) public {
+         addressToName[_address] = _name;  
+    } 
    
     
 }

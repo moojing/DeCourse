@@ -1,13 +1,19 @@
 import React,{useEffect,useContext} from 'react'; 
-import {AppContext} from '../context' 
 import {Grid} from '@material-ui/core'
 
+import {AppContext} from '../context' 
+import UserModal from './UserModal'
 import * as S from './CourseList.styled' 
+ 
 
 export default () => {
-    let {coursesState} = useContext(AppContext) 
+    let {coursesState,
+        setUserModal,
+        showUserModal} = useContext(AppContext) 
+    
     useEffect(()=>{
         console.log('courseStates',coursesState)
+        console.log('showUserModal',showUserModal)
     }) 
     return (
         <S.Container>
@@ -28,5 +34,9 @@ export default () => {
                     <S.Paper > xs=3 </S.Paper>
                 </Grid>
             </Grid>
+
+            <UserModal
+                showUserModal = {showUserModal}
+                setUserModal ={setUserModal}/>
     </S.Container>)
 };
