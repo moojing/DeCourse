@@ -1,1 +1,3 @@
 export let ADD_COURSE = 'ADD_COURSE'
+export let RESET_COURSE = 'RESET_COURSE'
+export let LOAD_COURSE = 'LOAD_COURSE'

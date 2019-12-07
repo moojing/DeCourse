@@ -1,7 +1,7 @@
 import React,{useState,useContext} from 'react'; 
 import {AppContext} from '../context'
 import * as S from './CustomModal.styled';
-import {Typography,Button,Modal,TextField} from '@material-ui/core';
+import {Select,MenuItem,Typography,Button,Modal,TextField} from '@material-ui/core';
 import web3 from 'web3'
 import {createCourse} from '../utils/contract'
 
@@ -9,12 +9,13 @@ let CreateModal =({showCreateModal,setCreateModal})=>{
     let {walletAddress} = useContext(AppContext)  
     let [courseTitle,setCourseTitle] = useState() 
     let [courseDescription,setCourseDescription] = useState() 
+    let [role,setRole] = useState(0) 
     
     let onCreateSubmit =()=>{
         let courseInfo = {
             title:courseTitle,
             description:courseDescription,
-            role:0}
+            role}
         createCourse(courseInfo,{
             from:walletAddress,
             value:web3.utils.toWei("1", "ether")
@@ -55,8 +56,20 @@ let CreateModal =({showCreateModal,setCreateModal})=>{
                         onChange={(e)=>{setCourseDescription(e.target.value)} } />
         </S.Box>
         <S.Box color="text.primary">
-           學生人數
-                    <TextField fullWidth={true}   variant="outlined" label="" />
+           你想當...
+           <Select
+            fullWidth={true}   
+            labelId="demo-simple-select-disabled-label"
+            onChange={(e)=>{setRole(e.target.value)}}
+          value={role}
+          
+        >
+            
+          <MenuItem value={0}>老師</MenuItem>
+          <MenuItem value={1}>學生</MenuItem>
+
+          </Select>
+                    {/* <TextField fullWidth={true}   variant="outlined" label="" /> */}
         </S.Box>
         <S.Box color="text.primary">
             <Button fullWidth size={'medium'} 

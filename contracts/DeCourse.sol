@@ -34,7 +34,9 @@ contract DeCourse {
         uint tuitionFee; 
         uint courseBalance;
     }
-
+    event JoinCourse(
+        address targetAddress
+    );
     event CreateCourse(
         uint256 indexed _courseId, 
         CourseJoinState  _courseJoinState
@@ -98,6 +100,9 @@ contract DeCourse {
         
         courses.push(newCourse); 
         
+        CourseJoinState memory newCourseState = getCourseState(newCourseId); 
+        emit CreateCourse(newCourseId,newCourseState) ;
+
         courses[newCourseId].addressToJoinState[msg.sender] = true; 
 
         if (_role == Role.Student) {
@@ -112,8 +117,7 @@ contract DeCourse {
             courses[newCourseId].teacher = msg.sender; 
             addressToTeacherCourse[msg.sender].push(newCourseId);
         }
-        CourseJoinState memory newCourseState = getCourseState(newCourseId); 
-        emit CreateCourse(newCourseId,newCourseState) ;
+        
             
         return  newCourseState;
         
@@ -144,7 +148,7 @@ contract DeCourse {
             courses[_courseId].teacher = msg.sender; 
             addressToTeacherCourse[msg.sender].push(_courseId);
         }
-
+        emit JoinCourse(msg.sender) ;
 
             
     } 

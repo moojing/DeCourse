@@ -1,5 +1,7 @@
 
-import {Paper as MPaper, Container as MContainer} from '@material-ui/core'
+import {Paper as MPaper, 
+       Container as MContainer,
+       Grid as MGrid} from '@material-ui/core'
 import styled from 'styled-components';
 
 export let Paper = styled(MPaper)`
@@ -7,6 +9,43 @@ export let Paper = styled(MPaper)`
     text-align: center;
     color: #efefef;
 `
+
+export const CourseGrid = styled(MGrid)`
+   
+    
+    .MuiPaper-root{
+        
+        cursor: pointer;
+        padding: 18px 1rem;
+        padding-bottom: 10px;
+        &:hover{
+            
+            background-color: #3f51b5;
+            color:white !important;
+            .course--info{
+                color:white !important;
+            }
+        }
+    }
+    .course--title{
+        min-height: 5rem;
+        display: flex; 
+        align-items:center; 
+        justify-content:center;
+        font-size: 22px;
+    }
+    .course--info{
+            display: flex;
+            justify-content:space-between;
+            margin: 0 ;
+            margin-top: 5px;
+            color:#afafaf;
+            .info-teacher{}
+            .info-student{
+                
+            }
+    }
+`;
 
 export const Container = styled(MContainer)`
     

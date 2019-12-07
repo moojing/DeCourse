@@ -6,7 +6,7 @@ import CourseList from './components/CourseList'
 import {askForSettingContractAddress,getContract} from './utils/contract'
 import {AppContext} from './context'
 import {courseReducer,courseInitialState} from './reducer'
-import {ADD_COURSE} from './action/types'
+import {ADD_COURSE,RESET_COURSE,LOAD_COURSE} from './action/types'
 import {getAddressName} from './utils/contract'
 
 function App() {
@@ -15,15 +15,28 @@ function App() {
   let [courseContract,setCourseContract] = useState(null)
   let [showUserModal,setUserModal] = useState(false) 
   let [showCreateModal,setCreateModal] = useState(false) 
+  let [showCourseModal,setCourseModal] = useState(false) 
   const [coursesState,courseDispatch] = useReducer(courseReducer,courseInitialState) 
   const [userName, setUserName] = React.useState('')  
-
+  let [loading,setLoading] = useState(true)
   let addCourse = (course) =>{
     console.log('course: ', course);
     return courseDispatch({
       type:ADD_COURSE, 
       payload:course 
     }) 
+  }
+  let loadCourse = (courses)=>{
+    return courseDispatch({
+      type:LOAD_COURSE, 
+      payload:courses
+    }) 
+  }
+  let resetCourse = ()=>{
+    return courseDispatch({
+      type:RESET_COURSE,
+      payload:[]
+    })
   }
 
   useEffect(()=>{
@@ -59,32 +72,34 @@ function App() {
             return;
         }
 
-        const {
-            _index: id,
-        } = event.returnValues._courseJoinState;
-
-        // dispatch({
-        //     type: types.COMPLETE_TODO,
-        //     id: Number(id),
-        //     completed: true,
+        setLoading(true)
+        // addCourse([event.returnValues._courseJoinState])
+        
         // })
     })
     courseContract.events.SetName().on('data', event=>{
+      console.log('Name_event: ', event);
       setUserName(event.returnValues._username)
     })
-  },[courseContract,walletAddress])
+  },[courseContract, walletAddress])
   
   let appContextValue = {
     walletAddress,
     courseContract,
     addCourse,
+    loadCourse,
+    resetCourse,
     coursesState,
     setUserModal,
     showUserModal,
     setCreateModal,
     showCreateModal,
+    setCourseModal,
+    showCourseModal,
     userName,
-    setUserName
+    setUserName,
+    setLoading,
+    loading
   }
   return (
     <AppContext.Provider value={appContextValue}>

@@ -20,11 +20,22 @@ export let getCourses = ()=>{
     return courseContract.methods.getCourses().call()
 }
 
+export let getCourseState = (courseId,options)=>{
+    return courseContract.methods.getCourseState(courseId).call()
+}
+
 export let createCourse = ({title,description,role},options)=>{
     return courseContract.methods.createCourse( 
         title,
         description,
         role).send({...options})
+}
+export let joinCourse = (courseId,role,options)=>{
+    console.log('role: ', role);
+    console.log('courseId: ', courseId);
+    return courseContract.methods.joinCourse( 
+        courseId,role
+        ).send({...options})
 }
 
 export let getAddressName = (address)=> {
