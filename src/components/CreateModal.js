@@ -6,7 +6,7 @@ import web3 from 'web3'
 import {createCourse} from '../utils/contract'
 
 let CreateModal =({showCreateModal,setCreateModal})=>{
-    let {walletAddress} = useContext(AppContext)  
+    let {walletAddress,setToastSetting} = useContext(AppContext)  
     let [courseTitle,setCourseTitle] = useState() 
     let [courseDescription,setCourseDescription] = useState() 
     let [role,setRole] = useState(0) 
@@ -21,7 +21,11 @@ let CreateModal =({showCreateModal,setCreateModal})=>{
             value:web3.utils.toWei("1", "ether")
         }).then(res=>{
             setCreateModal(false)
-            
+            setToastSetting(prev=>({
+                ...prev,
+                open:true,
+                message:'成功新增課程！'
+            }))
         })
     }
 

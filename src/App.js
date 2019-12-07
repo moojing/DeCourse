@@ -8,6 +8,7 @@ import {AppContext} from './context'
 import {courseReducer,courseInitialState} from './reducer'
 import {ADD_COURSE,RESET_COURSE,LOAD_COURSE} from './action/types'
 import {getAddressName} from './utils/contract'
+import Snackbar from '@material-ui/core/Snackbar';
 
 function App() {
   
@@ -19,6 +20,19 @@ function App() {
   const [coursesState,courseDispatch] = useReducer(courseReducer,courseInitialState) 
   const [userName, setUserName] = React.useState('')  
   let [loading,setLoading] = useState(true)
+  const [toastSetting, setToastSetting] = useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+    message:''
+  });
+  let onToastClose = ()=>{
+    setToastSetting(prev=>({
+      ...prev,
+      open:false,
+  }))
+  }
+
   let addCourse = (course) =>{
     console.log('course: ', course);
     return courseDispatch({
@@ -99,14 +113,27 @@ function App() {
     userName,
     setUserName,
     setLoading,
-    loading
+    loading,
+    setToastSetting
   }
+  let {vertical,horizontal,open,message} = toastSetting 
   return (
     <AppContext.Provider value={appContextValue}>
     <div className="App">
       <Header/>
       <CourseList/>
     </div>
+    <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        key={`${vertical},${horizontal}`}
+        open={open}
+        onClose={onToastClose}
+        ContentProps={{
+          'aria-describedby': 'message-id',
+        }}
+        autoHideDuration={1000}
+      message={<span >{message}</span>}/>
+
     </AppContext.Provider>
   );
 }

@@ -64,16 +64,16 @@ contract DeCourse {
     
     modifier haventJoinTheCourse (uint _courseId, Role _role) {
         if(_role == Role.Student){
-            for(uint i=0; i<addressToStudentCourse[msg.sender].length;i++){
-                uint  courseId  = addressToStudentCourse[msg.sender][i];
+            // for(uint i=0; i<addressToStudentCourse[msg.sender].length;i++){
+                // uint  courseId  = addressToStudentCourse[msg.sender][i];
                 //the courseId is the same as the courses index.
-                require(courses[courseId].addressToJoinState[msg.sender]  == false ,"Cant join the same course twice!");
-            } 
+                require(courses[_courseId].addressToJoinState[msg.sender]  == false ,"Cant join the same course twice!");
+            // } 
         }else if(_role == Role.Teacher){
-            for(uint i=0; i<addressToTeacherCourse[msg.sender].length;i++){
-                uint  courseId  = addressToTeacherCourse[msg.sender][i];
-                require(courses[courseId].addressToJoinState[msg.sender] == false , "Cant join the same course twice!");
-            } 
+            // for(uint i=0; i<addressToTeacherCourse[msg.sender].length;i++){
+                // uint  courseId  = addressToTeacherCourse[msg.sender][i];
+                require(courses[_courseId].addressToJoinState[msg.sender] == false , "Cant join the same course twice!");
+            // } 
         }
         _; 
     }

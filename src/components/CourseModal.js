@@ -7,7 +7,7 @@ import {joinCourse} from '../utils/contract'
 
 let CourseModal =({showCourseModal,setCourseModal,courseInfo})=>{
     console.log('courseInfo: ', courseInfo);
-    let {walletAddress,setLoading} = useContext(AppContext)  
+    let {walletAddress,setLoading,setToastSetting} = useContext(AppContext)  
     let [role,setRole] = useState(0) 
     
     let onJoinSubmit =()=>{
@@ -18,6 +18,11 @@ let CourseModal =({showCourseModal,setCourseModal,courseInfo})=>{
             console.log('JOINres: ', res);
             setCourseModal(false)
             setLoading(true)
+            setToastSetting(prev=>({
+                ...prev,
+                open:true,
+                message:'成功加入課程！'
+            }))
         })
     }
 
@@ -39,14 +44,17 @@ let CourseModal =({showCourseModal,setCourseModal,courseInfo})=>{
             課程名稱: {courseInfo.current.title}
         </S.Box>
         <S.Box color="text.primary">
+            學費（含保證金）: 1 ether
+        </S.Box>
+        <S.Box color="text.primary">
             課程內容描述（教學內容）: {courseInfo.current.description}
                      
         </S.Box>
         <S.Box color="text.primary">
             <p>老師： {courseInfo.current.teacher}</p>
-            <p>學生： {courseInfo.current.students && courseInfo.current.students.map(student=>{
+            <p>學生： {courseInfo.current.students && courseInfo.current.students.map((student,index)=>{
                return(
-               <span> {student} 、</span>
+               <span key={index}> {student} 、</span>
                ) 
             })}</p>
         </S.Box>
@@ -58,7 +66,7 @@ let CourseModal =({showCourseModal,setCourseModal,courseInfo})=>{
                 labelId="demo-simple-select-disabled-label"
                 onChange={(e)=>{setRole(e.target.value)}}
                 value={role}
-            
+                
             >
                 
             <MenuItem value={0}>Teacher</MenuItem>
