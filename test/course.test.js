@@ -100,6 +100,11 @@ contract("DeCourse", accounts => {
 	 	assert.equal(joinRes,false,'accounts[1] should leave the course.')
 		
 	})
+	it('should set a name to address',async function(){
+		await courseContract.setAddressName(accounts[0],'hello',{from:accounts[0]})
+		let adressName = await courseContract.getAddressName(accounts[0],{from:accounts[0]})
+		assert.equal(adressName,'hello','the name of accounts[0] should be hello')
+	})
 
 	// it('a student cant join the same course twice', async ()=>{
 	// 	await courseContract.createCourse(

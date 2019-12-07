@@ -12,7 +12,7 @@ export default  ({showUserModal,setUserModal})=>{
     console.log('walletAddress: ', walletAddress);
     let [userName,setUserName] = useState('')
     let onSetNameSubmit = () => {
-        setAddressName({walletAddress,userName},{
+        setAddressName(walletAddress,userName,{
                 from:walletAddress,
                 // value:web3.utils.toWei("1", "ether")
         }).then(res=>{
@@ -39,7 +39,7 @@ export default  ({showUserModal,setUserModal})=>{
                         <S.Box color="text.primary">
                             設定暱稱:
                             <TextField fullWidth={true}   
-                                        onChange = {value=>{ setUserName(value) }}
+                                        onChange = {e=>{ setUserName(e.target.value) }}
                                         variant="outlined" label="" />
                         </S.Box>
                         <S.Box color="text.primary">

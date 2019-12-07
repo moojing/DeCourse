@@ -27,8 +27,7 @@ export let createCourse = ({title,description,role},options)=>{
         role).send({...options})
 }
 
-export let setAddressName = ({address,name},options)=> {
-    console.log('address: ', address);
+export let setAddressName = (address,name,options)=> {
     return courseContract.methods.setAddressName(
         address,name).send({...options})
 } 

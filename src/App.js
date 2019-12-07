@@ -26,15 +26,36 @@ function App() {
 
   useEffect(()=>{
       setCourseContract(prev=> getContract(askForSettingContractAddress()))
-      setWalletAddress(prev=> {
-          window.ethereum.enable().then(result => { 
-          setWalletAddress(result[0] )
+      
+      window.ethereum.enable().then(result => { 
+        console.log('result[0]',result[0]) 
+        setWalletAddress(result[0])
       })
-    })
     return ()=>{
       
     }
   },[])
+
+  useEffect(()=>{
+    if(!courseContract) return ;
+    courseContract.events.CreateCourse()
+    .on('data', event => {
+      console.log('event: ', event);
+        if (!event) {
+            return;
+        }
+
+        // const {
+        //     _index: id,
+        // } = event.returnValues;
+
+        // dispatch({
+        //     type: types.COMPLETE_TODO,
+        //     id: Number(id),
+        //     completed: true,
+        // })
+    })
+  },[courseContract])
   
   let appContextValue = {
     walletAddress,

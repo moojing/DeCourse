@@ -17,6 +17,7 @@ export default () => {
         showCreateModal} = useContext(AppContext) 
       
     useEffect(()=>{
+      
         if(courseContract){
             courseContract.methods.getCourseStates().call()
                 .then(res=>{
@@ -24,6 +25,7 @@ export default () => {
                     if(res){
                         addCourse(res)
                     }
+                   
                     
             }) 
         }
@@ -36,7 +38,7 @@ export default () => {
                 {coursesState.map((course,index)=>{
                     return (
                         <Grid item xs={3} key={index}>
-                            <S.Paper> {course[0].title} </S.Paper>
+                            <S.Paper> {course.title} </S.Paper>
                         </Grid>
                     )
                 })}
