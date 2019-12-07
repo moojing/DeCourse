@@ -2,7 +2,6 @@ import React,{useContext, useEffect} from 'react'
 import AppBar from '@material-ui/core/AppBar';
 import {Button,Menu,MenuItem} from '@material-ui/core';
 
-import {createCourse,getCourses,getContract} from '../utils/contract'
 import web3 from 'web3';
 import * as S from './Header.styled'
 import {AppContext} from '../context/index'
@@ -12,14 +11,16 @@ let Header = ()=>{
   const [anchorEl, setAnchorEl] = React.useState(null);
   const {walletAddress,
          courseContract,
+         userName,
          setUserModal,
          setCreateModal}  = useContext(AppContext)
   
   useEffect(()=>{
-    if(courseContract){
+    if(courseContract&&walletAddress){
       console.log('courseContract: ', courseContract);
+     
     }
-  },[courseContract])
+  },[courseContract, walletAddress])
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
@@ -30,9 +31,12 @@ let Header = ()=>{
   };
   const onCreateClick = () => {
     setCreateModal(true)
+    handleClose()
   }
+   
   const onInfoClick = async ()=>{
     setUserModal(true)
+    handleClose()
     // let courseData = {
     //   title: 'BlockChain 101', 
     //   description:"let's learn blockchain!!",
@@ -54,7 +58,7 @@ let Header = ()=>{
             aria-haspopup="true" 
             onClick={handleClick}
             color="inherit">
-           {walletAddress?walletAddress.substring(0,10) + '...':''}
+           {userName?`Hi,${userName}`:''}
         </Button>
         <Menu
           id="simple-menu"

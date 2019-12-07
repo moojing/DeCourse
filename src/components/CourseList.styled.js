@@ -9,6 +9,12 @@ export let Paper = styled(MPaper)`
 `
 
 export const Container = styled(MContainer)`
-    padding: 4rem;
+    
+    min-height:20rem;
+    overflow:hidden;
+    position: relative;
+    .MuiGrid-container{
+        padding: 4rem;
+    }
 `;
 

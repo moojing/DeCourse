@@ -10,16 +10,15 @@ import {createCourse,setAddressName} from '../utils/contract'
 export default  ({showUserModal,setUserModal})=>{ 
     let {walletAddress} = useContext(AppContext)  
     console.log('walletAddress: ', walletAddress);
-    let [userName,setUserName] = useState('')
+    let [formUserName,setFormUserName] = useState('')
     let onSetNameSubmit = () => {
-        setAddressName(walletAddress,userName,{
+        setAddressName(walletAddress,formUserName,{
                 from:walletAddress,
                 // value:web3.utils.toWei("1", "ether")
         }).then(res=>{
-            console.log('res: ', res);
-            
+            setUserModal(false)
         })
-    } 
+    }
     return (
         <Modal  aria-labelledby="simple-modal-title"
                 aria-describedby="simple-modal-description"
@@ -39,7 +38,7 @@ export default  ({showUserModal,setUserModal})=>{
                         <S.Box color="text.primary">
                             設定暱稱:
                             <TextField fullWidth={true}   
-                                        onChange = {e=>{ setUserName(e.target.value) }}
+                                        onChange = {e=>{ setFormUserName(e.target.value) }}
                                         variant="outlined" label="" />
                         </S.Box>
                         <S.Box color="text.primary">

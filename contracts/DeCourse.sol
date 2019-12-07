@@ -37,8 +37,7 @@ contract DeCourse {
 
     event CreateCourse(
         uint256 indexed _courseId, 
-        string _description,
-        string _title
+        CourseJoinState  _courseJoinState
     );
 
     event Refund(
@@ -46,6 +45,9 @@ contract DeCourse {
         uint _value,
         uint _courseRemainBalance
     );
+
+    event SetName(string _username);
+    
     event Deposit(
         address indexed _student,
         uint _value, 
@@ -78,7 +80,7 @@ contract DeCourse {
     function createCourse (string memory _title, string memory _description, Role _role)  
         payable
         public 
-        returns (uint) {   
+        returns (CourseJoinState memory) {   
         
         address[] memory students ;
         uint newCourseId = courses.length;
@@ -110,9 +112,10 @@ contract DeCourse {
             courses[newCourseId].teacher = msg.sender; 
             addressToTeacherCourse[msg.sender].push(newCourseId);
         }
-        emit CreateCourse(newCourseId,courses[newCourseId].title, courses[newCourseId].description) ;
+        CourseJoinState memory newCourseState = getCourseState(newCourseId); 
+        emit CreateCourse(newCourseId,newCourseState) ;
             
-        return  courses[newCourseId].id;
+        return  newCourseState;
         
     }
     
@@ -264,6 +267,7 @@ contract DeCourse {
     } 
     function setAddressName(address _address, string memory _name) public {
          addressToName[_address] = _name;  
+         emit SetName(addressToName[_address]);
     } 
    
     
