@@ -12,8 +12,8 @@ let Header = ()=>{
   const [anchorEl, setAnchorEl] = React.useState(null);
   const {walletAddress,
          courseContract,
-         showUserModal,
-         setUserModal}  = useContext(AppContext)
+         setUserModal,
+         setCreateModal}  = useContext(AppContext)
   
   useEffect(()=>{
     if(courseContract){
@@ -28,8 +28,10 @@ let Header = ()=>{
   const handleClose = () => {
     setAnchorEl(null);
   };
-  
-  const onCreateCourse = async ()=>{
+  const onCreateClick = () => {
+    setCreateModal(true)
+  }
+  const onInfoClick = async ()=>{
     setUserModal(true)
     // let courseData = {
     //   title: 'BlockChain 101', 
@@ -37,9 +39,7 @@ let Header = ()=>{
     //   role:1
     // }
     // await createCourse(courseData,{from:walletAddress,value:web3.utils.toWei('1', 'ether')})
-    handleClose()
     // let courses = await getCourses()
-
   }
   
     return (
@@ -63,9 +63,9 @@ let Header = ()=>{
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={onCreateCourse}>個人資訊</MenuItem>
-          <MenuItem onClick={handleClose}>My account</MenuItem>
-          <MenuItem onClick={handleClose}>Logout</MenuItem>
+          <MenuItem onClick={onInfoClick}>個人資訊</MenuItem>
+          <MenuItem onClick={onCreateClick}>創造課程</MenuItem>
+
         </Menu>
         </S.Toolbar>
         
