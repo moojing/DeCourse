@@ -95,6 +95,10 @@ function App() {
       console.log('Name_event: ', event);
       setUserName(event.returnValues._username)
     })
+    courseContract.events.Refund().on('data', event=>{
+      console.log('event: ', event);
+      
+    })
   },[courseContract, walletAddress])
   
   let appContextValue = {

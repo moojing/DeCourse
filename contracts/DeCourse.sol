@@ -166,14 +166,13 @@ contract DeCourse {
                 targetCourse.teacher = address(0);
                 removeFromCourseTeacher(targetCourse.id);
             } else {
-                
-                
                for (uint i = 0; i<students.length; i++){
                    if(students[i]==msg.sender && targetCourse.addressToJoinState[msg.sender]==true){
                        //refund when a student leave the course
                        uint studentTuitionFee = targetCourse.studentIndexToTuitionFee[i];
                         msg.sender.transfer(studentTuitionFee);
-
+                        // targetCourse.addressToJoinState[msg.sender]
+                        
                         targetCourse.courseBalance -= studentTuitionFee;
                         emit Refund(msg.sender,studentTuitionFee,targetCourse.courseBalance ); 
                         targetCourse.studentIndexToTuitionFee[i] = 0; 
@@ -210,14 +209,23 @@ contract DeCourse {
     }
     function getCourseStates() public view returns(CourseJoinState[] memory){
         CourseJoinState[] memory courseJoinStates = new CourseJoinState[](courses.length); 
+        
         for (uint i=0; i<courses.length; i++){
             Course storage targetCourse  = courses[i];
-             courseJoinStates[i] =  CourseJoinState({
+            uint CourseId = i;
+            address[] memory validStudents =  new address[](targetCourse.students.length);
+            for (uint s=0;s<targetCourse.students.length;s++){
+                if(isAddressInCourse(CourseId,targetCourse.students[s])==true){
+                    validStudents[s] = targetCourse.students[s];
+                }
+            } 
+
+            courseJoinStates[i] =  CourseJoinState({
                 id: targetCourse.id,
                 title: targetCourse.title,
                 description: targetCourse.description,
                 teacher: targetCourse.teacher,
-                students: targetCourse.students,
+                students: validStudents,
                 tuitionFee: targetCourse.tuitionFee,
                 courseBalance : targetCourse.courseBalance
           });
@@ -226,12 +234,18 @@ contract DeCourse {
     }
     function getCourseState(uint _courseId) public view returns(CourseJoinState memory){
           Course storage targetCourse = courses[_courseId];
+          address[] memory validStudents =  new address[](targetCourse.students.length);
+          for (uint i=0;i<targetCourse.students.length;i++){
+              if(isAddressInCourse(_courseId,targetCourse.students[i])==true){
+                  validStudents[i] = targetCourse.students[i];
+              }
+          } 
           CourseJoinState memory courseState =  CourseJoinState({
                 id: targetCourse.id,
                 title: targetCourse.title,
                 description: targetCourse.description,
                 teacher: targetCourse.teacher,
-                students: targetCourse.students,
+                students: validStudents,
                 tuitionFee: targetCourse.tuitionFee,
                 courseBalance : targetCourse.courseBalance
           });

@@ -14,6 +14,7 @@ export default () => {
     let {coursesState,
         addCourse,
         resetCourse,
+        walletAddress,
         loadCourse,
         loading,
         setLoading,
@@ -45,10 +46,23 @@ export default () => {
     },[courseContract,loading])
     let onCourseClick = (course)=>{
         courseInfo.current = course
+        courseInfo.current.hasJoin = checkIfJoinCourse(course)
+        
         // getCourseState(courseId).then(res=>{
         //     console.log('res: ', res);
         // })
         setCourseModal(true)
+    }
+    let checkIfJoinCourse = (course)=>{
+        console.log('course: ', course);
+        console.log('walletAddress',walletAddress)
+       if (walletAddress === course.teacher.toLowerCase()) return true; 
+       let res =  course.students.find(student=>walletAddress===student.toLowerCase()) 
+       if(res){
+        return true
+       }else{
+           return false
+       }
     }
     return (
         <S.Container>
@@ -58,16 +72,26 @@ export default () => {
                         return (
                             <S.CourseGrid item xs={3} key={index}>
                                 <S.Paper
+                                    hasjoin={checkIfJoinCourse(course).toString()}
                                     onClick={()=>{onCourseClick(course)}}> 
                                     <div className="course--title">
                                         {course.title} 
                                     </div>
                                     <div className="course--info">
                                         <div className="info--teacher">
-                                            老師：{course.teacher&&course.teacher.substring(0,5)+'...'}
+                                            老師：{
+                                                ((course)=>{
+                                                    if(course.teacher==='0x0000000000000000000000000000000000000000'){
+                                                        return '-'
+                                                    }else{
+                                                        return course.teacher&&course.teacher.substring(0,5)+'...'
+                                                    }
+                                                
+                                                })(course)
+                                            }   
                                         </div>
                                         <div className="info--student">
-                                            學生：{`${course.students.length}人`} 
+                                            學生：{`${course.students.filter(student=>student!=='0x0000000000000000000000000000000000000000').length}人`} 
                                         </div>
                                     </div>    
                                 </S.Paper>

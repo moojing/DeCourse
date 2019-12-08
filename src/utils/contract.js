@@ -30,11 +30,19 @@ export let createCourse = ({title,description,role},options)=>{
         description,
         role).send({...options})
 }
+export let getStudentsByCourseId = (courseId) => {
+    return courseContract.methods.getStudentsByCourseId( 
+        courseId
+        ).call()
+}
 export let joinCourse = (courseId,role,options)=>{
-    console.log('role: ', role);
-    console.log('courseId: ', courseId);
     return courseContract.methods.joinCourse( 
         courseId,role
+        ).send({...options})
+}
+export let leaveCourse = (courseId,options)=>{
+    return courseContract.methods.leaveCourse( 
+        courseId
         ).send({...options})
 }
 

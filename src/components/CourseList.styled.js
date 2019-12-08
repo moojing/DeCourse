@@ -5,14 +5,24 @@ import {Paper as MPaper,
 import styled from 'styled-components';
 
 export let Paper = styled(MPaper)`
+    border: ${props => props.hasjoin==="true" ? "2px #ffd221 solid" : "none"};
     padding: 2rem;
     text-align: center;
     color: #efefef;
+    &:before{
+        display: ${props => props.hasjoin=== "true" ? "inline-block" : "none"};
+        content:'You are in.';
+        position: absolute; 
+        top: -5px;
+        left: 50%;
+        transform:translateX(-50%);
+        color:#ffd221;
+    }
 `
 
 export const CourseGrid = styled(MGrid)`
    
-    
+    position: relative;
     .MuiPaper-root{
         
         cursor: pointer;
