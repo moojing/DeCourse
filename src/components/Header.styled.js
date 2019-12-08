@@ -12,6 +12,12 @@ import MTypography from '@material-ui/core/Typography';
 
 let Typography  = styled(MTypography)`
     flex-grow:1;  
+    display: flex;
+    align-items:center;
+    img{
+        max-width: 40px;
+        margin: 0 10px;
+    }
 `; 
 
 

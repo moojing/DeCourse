@@ -2,6 +2,7 @@ import React,{useContext, useEffect} from 'react'
 import AppBar from '@material-ui/core/AppBar';
 import {Button,Menu,MenuItem} from '@material-ui/core';
 
+import logo from '../img/logo.png'
 import web3 from 'web3';
 import * as S from './Header.styled'
 import {AppContext} from '../context/index'
@@ -50,7 +51,8 @@ let Header = ()=>{
         <AppBar position="static">
         <S.Toolbar>
           <S.Typography variant="h6" >
-            DeCourse
+            <img src={logo} alt="DeCourse"/>
+             <strong>DeCourse</strong> - Anyone can be your teacher.
           </S.Typography>
           
         <Button 
