@@ -125,7 +125,7 @@ contract DeCourse {
     
     
     function joinCourse(uint _courseId  , Role _role) 
-        
+        haventJoinTheCourse(_courseId,_role)
         payable 
         public {
         Course storage targetCourse = courses[_courseId]; 

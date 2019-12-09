@@ -17,6 +17,7 @@
     "truffle-watch": "^0.1.4"
   },
   "scripts": {
+    "abi":"node ABIcloner.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

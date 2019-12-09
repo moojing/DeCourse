@@ -9,7 +9,8 @@ import {courseReducer,courseInitialState} from './reducer'
 import {ADD_COURSE,RESET_COURSE,LOAD_COURSE} from './action/types'
 import {getAddressName} from './utils/contract'
 import Snackbar from '@material-ui/core/Snackbar';
-
+import web3 from 'web3'
+import {web3Provider} from './services'
 function App() {
   
   let [walletAddress,setWalletAddress] = useState('') 
@@ -63,8 +64,16 @@ function App() {
         //   setUserName(result[0].substring(0,10)+'...')
         // }
       })
+     
+        // let accountInterval = setInterval(function() {
+        //   if (web3Provider.eth.accounts[0] !== walletAddress) {
+        //     console.log('web3Provider.eth.accounts[0]',web3Provider.eth.accounts[0])
+        //     setWalletAddress(web3Provider.eth.accounts[0])
+        //   }
+        // }, 3000);
+
     return ()=>{
-      
+      // clearInterval(accountInterval)
     }
   },[walletAddress])
 

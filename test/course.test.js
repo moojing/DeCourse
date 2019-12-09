@@ -68,7 +68,8 @@ contract("DeCourse", accounts => {
 
 		assert.equal(students[0], accounts[1], "account[1] should be a student.");
 	})
-
+	
+	
 	it('a student account[1] should join and leave the course.', async ()=>{
 
 		await courseContract.createCourse(
@@ -99,6 +100,25 @@ contract("DeCourse", accounts => {
 		
 	 	assert.equal(joinRes,false,'accounts[1] should leave the course.')
 		
+	})
+	it('a teacher account[2] sould joing the course.', async ()=>{
+
+		await courseContract.createCourse(
+			'The First Course','I am the student in this course',1
+		,{from:accounts[0],gas:6721975,value:web3.utils.toWei("1", "ether")});
+
+		let theFirstCourseId = 0;
+		
+		await courseContract.joinCourse(theFirstCourseId ,0,{
+			from:accounts[2],
+			gas:6721975,
+			value:web3.utils.toWei("0.6", "ether")
+		});
+
+		let teacher = await courseContract.getTeacher(0)
+		console.log('teacher: ', teacher);
+
+		assert.equal(teacher, accounts[2], "account[1] should be a student.");
 	})
 	it('should set a name to address',async function(){
 		await courseContract.setAddressName(accounts[0],'hello',{from:accounts[0]})
