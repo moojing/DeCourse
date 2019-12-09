@@ -9,11 +9,12 @@ let CourseModal =({showCourseModal,setCourseModal,courseInfo})=>{
     console.log('courseInfo: ', courseInfo);
     let {walletAddress,setLoading,setToastSetting} = useContext(AppContext)  
     let [role,setRole] = useState(0) 
+    let [tuitionFee,setTuitionFee] = useState(0) 
     // let [validStudents,students] = useState([])
     let onJoinSubmit =()=>{
         joinCourse(courseInfo.current.id,role,{
             from: walletAddress, 
-            value:web3.utils.toWei("1", "ether")
+            value:role===0?0:web3.utils.toWei(tuitionFee.toString(), "ether")
         }).then(res=>{
             setCourseModal(false)
             setLoading(true)
@@ -56,7 +57,7 @@ let CourseModal =({showCourseModal,setCourseModal,courseInfo})=>{
             課程名稱: {courseInfo.current.title}
         </S.Box>
         <S.Box color="text.primary">
-            學費（含保證金）: 1 ether
+            學費（含保證金）: 最低 1 ether
         </S.Box>
         <S.Box color="text.primary">
             課程內容描述（教學內容）: {courseInfo.current.description}
@@ -85,12 +86,20 @@ let CourseModal =({showCourseModal,setCourseModal,courseInfo})=>{
                 
             >
                 
-            <MenuItem value={0}>Teacher</MenuItem>
-            <MenuItem value={1}>Student</MenuItem>
+            <MenuItem value={0}>老師</MenuItem>
+            <MenuItem value={1}>學生</MenuItem>
 
             </Select>
             </>:null}            
         </S.Box>
+        {role ===1 ? (<S.Box color="text.primary">
+                            你想付多少學費 <small>（包含1%保證金，且必須高於限額）</small>:
+                            <TextField fullWidth={true}   
+                                        placeholder={tuitionFee}
+                                        onChange = {e=>{ setTuitionFee(e.target.value)  }}
+                                        variant="outlined" label="" />
+                        </S.Box>) : null}
+        
         <S.Box color="text.primary">
             {courseInfo.current.hasJoin?
                 
